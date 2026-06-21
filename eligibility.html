@@ -328,6 +328,38 @@
     color:#64748b;
   }
 
+  .provider-label{
+    font-size:13px;
+    font-weight:700;
+    color:#334155;
+    margin-top:4px;
+  }
+
+  .provider-row{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:8px;
+  }
+
+  .provider-btn{
+    background:#ffffff;
+    border:1.5px solid #e2e8f0;
+    color:#0f172a;
+    font-size:14px;
+    font-weight:700;
+    padding:10px 18px;
+    border-radius:10px;
+    cursor:pointer;
+    text-decoration:none;
+  }
+
+  .provider-btn:hover{
+    border-color:#e94e1b;
+    background:#fff7ed;
+    color:#e94e1b;
+  }
+
   .mail-fallback{
     margin-top:4px;
     font-size:13px;
@@ -698,8 +730,14 @@
       html += '<span class="status-pill amber">Review Required</span>';
       html += '<h2>You may be eligible &mdash; let us talk.</h2>';
       html += '<p>A few areas of your profile need a closer look before we can confirm fit. Reach out to our team and we will walk you through next steps.</p>';
-      html += '<a class="result-cta amber" href="' + buildGmailHref() + '" target="_blank" rel="noopener">Contact T-Edge Team &rarr;</a>';
-      html += '<div class="mail-fallback">No Gmail? Email us at <a href="' + buildAmberMailHref() + '">' + esc(TEDGE_EMAIL) + '</a> &nbsp;&middot;&nbsp; <button type="button" class="copy-btn" id="copyEmailBtn">Copy address</button></div>';
+      html += '<div class="provider-label">Contact us using your email provider:</div>';
+      html += '<div class="provider-row">';
+      html += '<a class="provider-btn" href="' + buildGmailHref() + '" target="_blank" rel="noopener">Gmail</a>';
+      html += '<a class="provider-btn" href="' + buildOutlookHref() + '" target="_blank" rel="noopener">Outlook</a>';
+      html += '<a class="provider-btn" href="' + buildYahooHref() + '" target="_blank" rel="noopener">Yahoo</a>';
+      html += '<a class="provider-btn" href="' + buildAmberMailHref() + '">Default mail app</a>';
+      html += '</div>';
+      html += '<div class="mail-fallback">Facing an issue? Email us at <a href="' + buildAmberMailHref() + '">' + esc(TEDGE_EMAIL) + '</a> &nbsp;&middot;&nbsp; <button type="button" class="copy-btn" id="copyEmailBtn">Copy address</button></div>';
       html += '</div>';
 
       cardEl.innerHTML = html;
@@ -796,6 +834,24 @@
     return "https://mail.google.com/mail/?view=cm&fs=1&to=" +
       encodeURIComponent(TEDGE_EMAIL) +
       "&su=" + encodeURIComponent(parts.subject) +
+      "&body=" + encodeURIComponent(parts.body);
+  }
+
+  function buildOutlookHref() {
+    var parts = buildMailParts();
+
+    return "https://outlook.office.com/mail/deeplink/compose?to=" +
+      encodeURIComponent(TEDGE_EMAIL) +
+      "&subject=" + encodeURIComponent(parts.subject) +
+      "&body=" + encodeURIComponent(parts.body);
+  }
+
+  function buildYahooHref() {
+    var parts = buildMailParts();
+
+    return "https://compose.mail.yahoo.com/?to=" +
+      encodeURIComponent(TEDGE_EMAIL) +
+      "&subject=" + encodeURIComponent(parts.subject) +
       "&body=" + encodeURIComponent(parts.body);
   }
 
