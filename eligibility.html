@@ -113,6 +113,12 @@
     .card{padding:30px 21px;border-radius:18px;}
   }
 
+  .back-row{
+    margin-top:22px;
+    display:flex;
+    justify-content:flex-start;
+  }
+
   .back-btn{
     background:none;
     border:none;
@@ -121,7 +127,7 @@
     font-weight:700;
     cursor:pointer;
     padding:6px 10px;
-    margin:-6px 0 18px -10px;
+    margin:0 0 0 -10px;
     border-radius:999px;
   }
 
@@ -322,51 +328,37 @@
     color:#64748b;
   }
 
-  .modal-overlay{
-    position:fixed;
-    inset:0;
-    background:rgba(15,23,42,.55);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
-    z-index:999999;
+  .mail-fallback{
+    margin-top:4px;
+    font-size:13px;
+    color:#64748b;
+    font-weight:600;
   }
 
-  .modal-overlay.show{display:flex;}
-
-  .modal{
-    background:#ffffff;
-    border:1px solid #f1f5f9;
-    border-radius:22px;
-    box-shadow:0 14px 45px rgba(15,23,42,0.08);
-    width:100%;
-    max-width:660px;
-    max-height:90vh;
-    overflow:auto;
-    padding:22px;
-    position:relative;
+  .mail-fallback a{
+    color:#e94e1b;
+    text-decoration:none;
+    font-weight:700;
   }
 
-  .modal-close{
-    position:absolute;
-    top:14px;
-    right:14px;
+  .mail-fallback a:hover{
+    text-decoration:underline;
+  }
+
+  .copy-btn{
     background:#f8fafc;
     border:1.5px solid #e2e8f0;
-    color:#0f172a;
-    width:34px;
-    height:34px;
-    border-radius:10px;
+    color:#334155;
+    font-size:12px;
+    font-weight:700;
+    padding:4px 10px;
+    border-radius:999px;
     cursor:pointer;
-    font-size:16px;
   }
 
-  .modal h3{
-    margin:4px 40px 16px 4px;
-    font-size:17px;
-    font-weight:850;
-    color:#0f172a;
+  .copy-btn:hover{
+    border-color:#e94e1b;
+    color:#e94e1b;
   }
 
   .footer-note{
@@ -398,27 +390,13 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
-    <button class="modal-close" id="modalClose" aria-label="Close">&#10005;</button>
-    <h3>Co-Working Startup Application</h3>
-
-    <iframe
-      aria-label="Co-Working Startup Application Form DST"
-      frameborder="0"
-      style="height:500px;width:99%;border:none;"
-      src="https://forms.zohopublic.com/THub/form/CoWorkingStartupApplicationFormDST/formperma/YLvogItdqrk3ibi_zo2JUKp_5cW-3hqy99Es7SuFphQ?zf_enablecamera=true"
-      allow="camera;">
-    </iframe>
-  </div>
-</div>
-
 <script>
 (function(){
 
   var TOTAL_STEPS = 5;
   var TEDGE_EMAIL = "t-edge@t-hub.co";
   var RED_REDIRECT = "https://www.t-hub.co/programs";
+  var ZOHO_FORM_URL = "https://forms.zohopublic.com/THub/form/CoWorkingStartupApplicationFormDST/formperma/YLvogItdqrk3ibi_zo2JUKp_5cW-3hqy99Es7SuFphQ?zf_enablecamera=true";
 
   var questions = [
     {
@@ -519,8 +497,6 @@
 
   var cardEl = document.getElementById("card");
   var trailEl = document.getElementById("trail");
-  var modalOverlay = document.getElementById("modalOverlay");
-  var modalClose = document.getElementById("modalClose");
 
   if (!cardEl || !trailEl) {
     return;
@@ -577,10 +553,6 @@
 
     renderTrail(idx);
 
-    if (idx > 0) {
-      html += '<button type="button" class="back-btn" id="backBtn">&lsaquo; Back</button>';
-    }
-
     html += '<div class="eyebrow">' + esc(q.eyebrow) + '</div>';
     html += '<h2 class="qtext">' + esc(q.text) + '</h2>';
     html += '<div class="options">';
@@ -597,6 +569,10 @@
 
     html += '</div>';
     html += '<div class="note" id="inlineNote"></div>';
+
+    if (idx > 0) {
+      html += '<div class="back-row"><button type="button" class="back-btn" id="backBtn">&lsaquo; Back</button></div>';
+    }
 
     cardEl.innerHTML = html;
 
@@ -710,14 +686,10 @@
       html += '<div class="beacon green">&#10003;</div>';
       html += '<h2>You look like a great fit.</h2>';
       html += '<p>Based on your answers, your startup aligns well with T-Hub co-working policy. Go ahead and apply, and our team will be in touch.</p>';
-      html += '<button type="button" class="result-cta green" id="applyBtn">Apply for Co-Working Space &rarr;</button>';
+      html += '<a class="result-cta green" href="' + ZOHO_FORM_URL + '" target="_top" rel="noopener">Apply for Co-Working Space &rarr;</a>';
       html += '</div>';
 
       cardEl.innerHTML = html;
-
-      document.getElementById("applyBtn").onclick = function() {
-        openApplicationModal();
-      };
     }
 
     if (type === "amber") {
@@ -726,10 +698,26 @@
       html += '<span class="status-pill amber">Review Required</span>';
       html += '<h2>You may be eligible &mdash; let us talk.</h2>';
       html += '<p>A few areas of your profile need a closer look before we can confirm fit. Reach out to our team and we will walk you through next steps.</p>';
-      html += '<a class="result-cta amber" href="' + buildAmberMailHref() + '" target="_top" rel="noopener">Contact T-Edge Team &rarr;</a>';
+      html += '<a class="result-cta amber" href="' + buildGmailHref() + '" target="_blank" rel="noopener">Contact T-Edge Team &rarr;</a>';
+      html += '<div class="mail-fallback">No Gmail? Email us at <a href="' + buildAmberMailHref() + '">' + esc(TEDGE_EMAIL) + '</a> &nbsp;&middot;&nbsp; <button type="button" class="copy-btn" id="copyEmailBtn">Copy address</button></div>';
       html += '</div>';
 
       cardEl.innerHTML = html;
+
+      var copyBtn = document.getElementById("copyEmailBtn");
+      if (copyBtn) {
+        copyBtn.onclick = function() {
+          var btn = this;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(TEDGE_EMAIL).then(function() {
+              btn.innerHTML = "Copied!";
+              setTimeout(function(){ btn.innerHTML = "Copy address"; }, 2000);
+            });
+          } else {
+            btn.innerHTML = TEDGE_EMAIL;
+          }
+        };
+      }
     }
 
     if (type === "red") {
@@ -778,32 +766,7 @@
     }
   }
 
-  function openApplicationModal() {
-    if (modalOverlay) {
-      modalOverlay.className = "modal-overlay show";
-    }
-  }
-
-  if (modalClose) {
-    modalClose.onclick = function() {
-      if (modalOverlay) {
-        modalOverlay.className = "modal-overlay";
-      }
-    };
-  }
-
-  if (modalOverlay) {
-    modalOverlay.onclick = function(e) {
-      e = e || window.event;
-      var target = e.target || e.srcElement;
-
-      if (target && target.id === "modalOverlay") {
-        modalOverlay.className = "modal-overlay";
-      }
-    };
-  }
-
-  function buildAmberMailHref() {
+  function buildMailParts() {
     var subject = "T-Hub Co-Working Eligibility Assessment - Review Requested";
     var body = "";
     var i;
@@ -824,7 +787,24 @@
     body += "- Seats requested: " + (labelMap.seats[answers.seats] || answers.seats) + "\n";
     body += "\nPlease reply to the sender once they reach out, or ask them to share their startup name and contact details.\n";
 
-    return "mailto:" + TEDGE_EMAIL + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+    return { subject: subject, body: body };
+  }
+
+  function buildGmailHref() {
+    var parts = buildMailParts();
+
+    return "https://mail.google.com/mail/?view=cm&fs=1&to=" +
+      encodeURIComponent(TEDGE_EMAIL) +
+      "&su=" + encodeURIComponent(parts.subject) +
+      "&body=" + encodeURIComponent(parts.body);
+  }
+
+  function buildAmberMailHref() {
+    var parts = buildMailParts();
+
+    return "mailto:" + TEDGE_EMAIL +
+      "?subject=" + encodeURIComponent(parts.subject) +
+      "&body=" + encodeURIComponent(parts.body);
   }
 
   renderQuestion(0);
