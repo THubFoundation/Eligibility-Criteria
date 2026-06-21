@@ -328,36 +328,81 @@
     color:#64748b;
   }
 
-  .provider-label{
-    font-size:13px;
-    font-weight:700;
-    color:#334155;
-    margin-top:4px;
+  .contact-wrap{
+    position:relative;
+    display:inline-flex;
+    align-items:flex-start;
   }
 
-  .provider-row{
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:8px;
-  }
-
-  .provider-btn{
+  .provider-pop{
+    display:none;
+    position:absolute;
+    left:calc(100% + 12px);
+    top:0;
     background:#ffffff;
-    border:1.5px solid #e2e8f0;
-    color:#0f172a;
-    font-size:14px;
-    font-weight:700;
-    padding:10px 18px;
-    border-radius:10px;
-    cursor:pointer;
-    text-decoration:none;
+    border:1px solid #e2e8f0;
+    border-radius:14px;
+    box-shadow:0 14px 45px rgba(15,23,42,0.16);
+    padding:8px;
+    z-index:50;
+    min-width:200px;
+    flex-direction:column;
+    gap:2px;
   }
 
-  .provider-btn:hover{
-    border-color:#e94e1b;
+  .provider-pop.show{
+    display:flex;
+  }
+
+  .provider-pop:before{
+    content:'';
+    position:absolute;
+    left:-7px;
+    top:18px;
+    width:12px;
+    height:12px;
+    background:#ffffff;
+    border-left:1px solid #e2e8f0;
+    border-bottom:1px solid #e2e8f0;
+    transform:rotate(45deg);
+  }
+
+  .provider-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 12px;
+    border-radius:10px;
+    text-decoration:none;
+    color:#0f172a;
+    font-size:14.5px;
+    font-weight:650;
+    white-space:nowrap;
+  }
+
+  .provider-item svg{
+    flex-shrink:0;
+  }
+
+  .provider-item:hover{
     background:#fff7ed;
     color:#e94e1b;
+  }
+
+  @media (max-width:640px){
+    .provider-pop{
+      left:50%;
+      top:calc(100% + 12px);
+      transform:translateX(-50%);
+    }
+    .provider-pop:before{
+      left:50%;
+      top:-7px;
+      margin-left:-6px;
+      border-left:1px solid #e2e8f0;
+      border-top:1px solid #e2e8f0;
+      border-bottom:none;
+    }
   }
 
   .mail-fallback{
@@ -429,6 +474,14 @@
   var TEDGE_EMAIL = "t-edge@t-hub.co";
   var RED_REDIRECT = "https://www.t-hub.co/programs";
   var ZOHO_FORM_URL = "https://forms.zohopublic.com/THub/form/CoWorkingStartupApplicationFormDST/formperma/YLvogItdqrk3ibi_zo2JUKp_5cW-3hqy99Es7SuFphQ?zf_enablecamera=true";
+
+  var GMAIL_LOGO = '<svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#4285f4" d="M6 12v24a2 2 0 0 0 2 2h4V18l12 9 12-9v20h4a2 2 0 0 0 2-2V12l-18 13.5z"/><path fill="#34a853" d="M12 38V18l12 9 12-9v20H12z" opacity="0"/><path fill="#ea4335" d="M6 12l18 13.5L42 12v-1.2A2.8 2.8 0 0 0 39.2 8H8.8A2.8 2.8 0 0 0 6 10.8z"/><path fill="#fbbc04" d="M6 12v24h6V18z"/><path fill="#34a853" d="M42 12v24h-6V18z"/><path fill="#c5221f" d="M6 12l18 13.5L42 12l-18 13.5z" opacity="0"/></svg>';
+
+  var OUTLOOK_LOGO = '<svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#0364b8" d="M44 13.5V34a2 2 0 0 1-2 2H24V12h18a2 2 0 0 1 2 1.5z"/><path fill="#0a2767" d="M24 24l20-10v-0.5A2 2 0 0 0 42 12H24z"/><path fill="#28a8ea" d="M44 14L24 24v12h18a2 2 0 0 0 2-2z"/><rect width="22" height="22" x="3" y="13" fill="#0078d4" rx="2"/><path fill="#fff" d="M14 18.5c-3 0-5 2.4-5 5.5s2 5.5 5 5.5 5-2.4 5-5.5-2-5.5-5-5.5zm0 9c-1.7 0-2.7-1.5-2.7-3.5s1-3.5 2.7-3.5 2.7 1.5 2.7 3.5-1 3.5-2.7 3.5z"/></svg>';
+
+  var YAHOO_LOGO = '<svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><rect width="48" height="48" fill="#5f01d1" rx="8"/><path fill="#fff" d="M13 14h5l4 8 4-8h5l-7 13v7h-4v-7z"/><circle cx="33" cy="30" r="2.6" fill="#fff"/><path fill="#fff" d="M31 14h5l-1.2 11h-2.6z"/></svg>';
+
+  var MAIL_LOGO = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2" fill="none" stroke="#64748b" stroke-width="2"/><path d="M3 6l9 7 9-7" fill="none" stroke="#64748b" stroke-width="2"/></svg>';
 
   var questions = [
     {
@@ -730,17 +783,42 @@
       html += '<span class="status-pill amber">Review Required</span>';
       html += '<h2>You may be eligible &mdash; let us talk.</h2>';
       html += '<p>A few areas of your profile need a closer look before we can confirm fit. Reach out to our team and we will walk you through next steps.</p>';
-      html += '<div class="provider-label">Contact us using your email provider:</div>';
-      html += '<div class="provider-row">';
-      html += '<a class="provider-btn" href="' + buildGmailHref() + '" target="_blank" rel="noopener">Gmail</a>';
-      html += '<a class="provider-btn" href="' + buildOutlookHref() + '" target="_blank" rel="noopener">Outlook</a>';
-      html += '<a class="provider-btn" href="' + buildYahooHref() + '" target="_blank" rel="noopener">Yahoo</a>';
-      html += '<a class="provider-btn" href="' + buildAmberMailHref() + '">Default mail app</a>';
+      html += '<div class="contact-wrap">';
+      html += '<button type="button" class="result-cta amber" id="contactBtn">Contact T-Edge Team &rarr;</button>';
+      html += '<div class="provider-pop" id="providerPop">';
+      html += '<a class="provider-item" href="' + buildGmailHref() + '" target="_blank" rel="noopener">' + GMAIL_LOGO + '<span>Gmail</span></a>';
+      html += '<a class="provider-item" href="' + buildOutlookHref() + '" target="_blank" rel="noopener">' + OUTLOOK_LOGO + '<span>Outlook</span></a>';
+      html += '<a class="provider-item" href="' + buildYahooHref() + '" target="_blank" rel="noopener">' + YAHOO_LOGO + '<span>Yahoo</span></a>';
+      html += '<a class="provider-item" href="' + buildAmberMailHref() + '">' + MAIL_LOGO + '<span>Default mail app</span></a>';
+      html += '</div>';
       html += '</div>';
       html += '<div class="mail-fallback">Facing an issue? Email us at <a href="' + buildAmberMailHref() + '">' + esc(TEDGE_EMAIL) + '</a> &nbsp;&middot;&nbsp; <button type="button" class="copy-btn" id="copyEmailBtn">Copy address</button></div>';
       html += '</div>';
 
       cardEl.innerHTML = html;
+
+      var contactBtn = document.getElementById("contactBtn");
+      var providerPop = document.getElementById("providerPop");
+
+      if (contactBtn && providerPop) {
+        contactBtn.onclick = function(e) {
+          e = e || window.event;
+          if (e.stopPropagation) { e.stopPropagation(); }
+          if (providerPop.className.indexOf("show") === -1) {
+            providerPop.className = "provider-pop show";
+          } else {
+            providerPop.className = "provider-pop";
+          }
+        };
+
+        document.onclick = function(e) {
+          e = e || window.event;
+          var target = e.target || e.srcElement;
+          if (providerPop && target !== contactBtn && !providerPop.contains(target)) {
+            providerPop.className = "provider-pop";
+          }
+        };
+      }
 
       var copyBtn = document.getElementById("copyEmailBtn");
       if (copyBtn) {
