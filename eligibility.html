@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T-Hub Co-Working — Eligibility Self-Assessment</title>
+<style>
+  :root{
+    --page-bg:#f5f7fa;
+    --card-bg:#ffffff;
+    --card-border:#f1f5f9;
+    --line:#e2e8f0;
+    --text:#0f172a;
+    --muted:#64748b;
+    --label:#334155;
+    --faint:#94a3b8;
+    --accent:#e94e1b;
+    --accent-hover:#d94316;
+    --accent-glow:rgba(233,78,27,0.12);
+    --accent-soft-bg:#fff7ed;
+    --accent-soft-border:#fed7aa;
+    --green-bg:#dcfce7;
+    --green-text:#15803d;
+    --green-strong:#16a34a;
+    --amber-bg:#fffbeb;
+    --amber-border:#fcd34d;
+    --amber-text:#b45309;
+    --amber-strong:#d97706;
+    --red-bg:#fff1f2;
+    --red-border:#fecdd3;
+    --red-title:#be123c;
+    --shadow-card:0 14px 45px rgba(15,23,42,0.08);
+  }
+
+  *{box-sizing:border-box;}
+
+  html,body{margin:0;padding:0;}
+
+  .eligibility-page{
+    background:#f5f7fa;
+    color:#0f172a;
+    font-family:'Segoe UI',Arial,Helvetica,sans-serif;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+
+  .stage{
+    width:100%;
+    max-width:680px;
+    position:relative;
+  }
+
+  .trail{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    margin-bottom:22px;
+  }
+
+  .trail .seg{
+    flex:1;
+    height:4px;
+    background:#e2e8f0;
+    border-radius:999px;
+    overflow:hidden;
+    position:relative;
+  }
+
+  .trail .seg:after{
+    content:'';
+    position:absolute;
+    left:0;
+    top:0;
+    bottom:0;
+    width:0%;
+    background:#e94e1b;
+    transition:width .45s ease;
+  }
+
+  .trail .seg.done:after{width:100%;}
+
+  .trail .seg.active:after{
+    width:50%;
+  }
+
+  .trail .qcount{
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.06em;
+    color:#94a3b8;
+    white-space:nowrap;
+  }
+
+  .card{
+    background:#ffffff;
+    border:1px solid #f1f5f9;
+    border-radius:22px;
+    box-shadow:0 14px 45px rgba(15,23,42,0.08);
+    padding:46px 48px;
+    min-height:320px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    position:relative;
+  }
+
+  @media (max-width:640px){
+    .eligibility-page{padding:16px;}
+    .card{padding:30px 21px;border-radius:18px;}
+  }
+
+  .back-btn{
+    background:none;
+    border:none;
+    color:#64748b;
+    font-size:13px;
+    font-weight:700;
+    cursor:pointer;
+    padding:6px 10px;
+    margin:-6px 0 18px -10px;
+    border-radius:999px;
+  }
+
+  .back-btn:hover{
+    color:#e94e1b;
+    background:#f8fafc;
+  }
+
+  .eyebrow{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    font-weight:800;
+    color:#e94e1b;
+    margin-bottom:8px;
+  }
+
+  .qtext{
+    font-size:26px;
+    line-height:1.3;
+    font-weight:850;
+    color:#0f172a;
+    margin:0 0 28px 0;
+  }
+
+  @media (max-width:640px){
+    .qtext{font-size:22px;}
+  }
+
+  .options{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .opt{
+    text-align:left;
+    background:#ffffff;
+    border:1.5px solid #e2e8f0;
+    color:#0f172a;
+    padding:16px 18px;
+    border-radius:14px;
+    font-size:15px;
+    line-height:1.4;
+    font-weight:600;
+    cursor:pointer;
+  }
+
+  .opt:hover{
+    border-color:#e94e1b;
+    background:#fff7ed;
+    box-shadow:0 0 0 4px rgba(233,78,27,0.12);
+  }
+
+  .opt.selected{
+    border-color:#e94e1b;
+    background:#fff7ed;
+    box-shadow:0 0 0 4px rgba(233,78,27,0.12);
+  }
+
+  .opt-letter{
+    display:inline-block;
+    font-size:12px;
+    font-weight:800;
+    color:#94a3b8;
+    margin-right:10px;
+  }
+
+  .note{
+    margin-top:16px;
+    font-size:13.5px;
+    line-height:1.6;
+    color:#e94e1b;
+    background:#fff7ed;
+    border:1px solid #fed7aa;
+    padding:14px 16px;
+    border-radius:14px;
+    display:none;
+    font-weight:600;
+  }
+
+  .note.show{display:block;}
+
+  .note-continue{
+    margin-top:10px;
+    background:#e94e1b;
+    color:#ffffff;
+    border:none;
+    padding:9px 16px;
+    border-radius:999px;
+    font-size:13px;
+    font-weight:750;
+    cursor:pointer;
+  }
+
+  .result{
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:18px;
+  }
+
+  .beacon{
+    width:54px;
+    height:54px;
+    border-radius:17px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:26px;
+    box-shadow:0 8px 24px rgba(15,23,42,0.10);
+  }
+
+  .beacon.green{
+    background:#dcfce7;
+    color:#16a34a;
+  }
+
+  .beacon.amber{
+    background:#fffbeb;
+    color:#d97706;
+    border:1px solid #fcd34d;
+  }
+
+  .beacon.red{
+    background:#fff1f2;
+    color:#be123c;
+    border:1px solid #fecdd3;
+  }
+
+  .result h2{
+    margin:0;
+    font-size:25px;
+    font-weight:850;
+    color:#0f172a;
+  }
+
+  .result p{
+    margin:0;
+    color:#64748b;
+    font-size:15px;
+    line-height:1.7;
+    max-width:480px;
+  }
+
+  .status-pill{
+    font-size:12px;
+    font-weight:800;
+    padding:7px 14px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+
+  .status-pill.amber{
+    background:#fffbeb;
+    color:#b45309;
+  }
+
+  .status-pill.red{
+    background:#fff1f2;
+    color:#be123c;
+  }
+
+  .result-cta{
+    margin-top:10px;
+    border:2px solid transparent;
+    padding:15px 26px;
+    border-radius:12px;
+    font-size:15.5px;
+    font-weight:750;
+    cursor:pointer;
+    display:inline-block;
+    text-decoration:none;
+  }
+
+  .result-cta.green{
+    background:#16a34a;
+    color:#ffffff;
+    border-color:#16a34a;
+  }
+
+  .result-cta.amber{
+    background:#d97706;
+    color:#ffffff;
+    border-color:#d97706;
+  }
+
+  .result-cta.red{
+    background:#ffffff;
+    color:#64748b;
+    border-color:#e2e8f0;
+  }
+
+  .countdown{
+    font-size:13px;
+    font-weight:650;
+    color:#64748b;
+  }
+
+  .modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(15,23,42,.55);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:999999;
+  }
+
+  .modal-overlay.show{display:flex;}
+
+  .modal{
+    background:#ffffff;
+    border:1px solid #f1f5f9;
+    border-radius:22px;
+    box-shadow:0 14px 45px rgba(15,23,42,0.08);
+    width:100%;
+    max-width:660px;
+    max-height:90vh;
+    overflow:auto;
+    padding:22px;
+    position:relative;
+  }
+
+  .modal-close{
+    position:absolute;
+    top:14px;
+    right:14px;
+    background:#f8fafc;
+    border:1.5px solid #e2e8f0;
+    color:#0f172a;
+    width:34px;
+    height:34px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:16px;
+  }
+
+  .modal h3{
+    margin:4px 40px 16px 4px;
+    font-size:17px;
+    font-weight:850;
+    color:#0f172a;
+  }
+
+  .footer-note{
+    text-align:center;
+    margin-top:18px;
+    font-size:12px;
+    font-weight:600;
+    color:#94a3b8;
+  }
+</style>
+</head>
+<body>
+
+<div class="eligibility-page">
+  <div class="stage">
+    <div class="trail" id="trail"></div>
+
+    <div class="card" id="card">
+      <div class="eyebrow">Loading</div>
+      <h2 class="qtext">Loading eligibility assessment...</h2>
+      <p style="color:#64748b;font-size:15px;line-height:1.6;">
+        If this does not load, please refresh the page or contact the T-Hub team.
+      </p>
+    </div>
+
+    <div class="footer-note">
+      T-Hub Co-Working &mdash; Eligibility Self-Assessment
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="modal-close" id="modalClose" aria-label="Close">&#10005;</button>
+    <h3>Co-Working Startup Application</h3>
+
+    <iframe
+      aria-label="Co-Working Startup Application Form DST"
+      frameborder="0"
+      style="height:500px;width:99%;border:none;"
+      src="https://forms.zohopublic.com/THub/form/CoWorkingStartupApplicationFormDST/formperma/YLvogItdqrk3ibi_zo2JUKp_5cW-3hqy99Es7SuFphQ?zf_enablecamera=true"
+      allow="camera;">
+    </iframe>
+  </div>
+</div>
+
+<script>
+(function(){
+
+  var TOTAL_STEPS = 5;
+  var TEDGE_EMAIL = "t-edge@t-hub.co";
+  var RED_REDIRECT = "https://www.t-hub.co/programs";
+
+  var questions = [
+    {
+      id: "dpiit",
+      eyebrow: "Startup registration",
+      text: "Are you a DPIIT-recognised Startup India company?",
+      options: [
+        {label:"Yes", value:"yes"},
+        {label:"No, but we plan to register", value:"planning"},
+        {label:"No", value:"no"}
+      ],
+      noteOnSelect: {
+        planning: "DPIIT registration will be required within 30 days of onboarding. Contact t-edge@t-hub.co",
+        no: "DPIIT registration is a mandatory criterion for co-working eligibility. Your application will be flagged for review by our team."
+      }
+    },
+    {
+      id: "coreops",
+      eyebrow: "Core operations",
+      text: "What best describes the core of what your startup does?",
+      options: [
+        {label:"We are building a proprietary technology product or platform", value:"a"},
+        {label:"We are developing innovative solutions using our own IP or algorithms", value:"b"},
+        {label:"We provide consulting, implementation, or support services using third-party technology, for example SAP, Salesforce, Oracle, AWS partner services", value:"c"},
+        {label:"We provide staffing, recruitment, or workforce solutions", value:"d"},
+        {label:"Other", value:"e"}
+      ]
+    },
+    {
+      id: "ip",
+      eyebrow: "Intellectual property",
+      text: "Do you own or are you in the process of securing any intellectual property relevant to your product?",
+      options: [
+        {label:"Yes, we have registered IP", value:"registered"},
+        {label:"Yes, applications are in progress", value:"inprogress"},
+        {label:"Not yet, but we plan to", value:"planned"},
+        {label:"No", value:"no"}
+      ]
+    },
+    {
+      id: "stage",
+      eyebrow: "Business stage & traction",
+      text: "What stage is your startup at?",
+      options: [
+        {label:"Ideation / Prototype / Pre-revenue with MVP", value:"ideation"},
+        {label:"Revenue-generating", value:"revenue"},
+        {label:"Funded - Pre-Seed / Seed / Series A+", value:"funded"}
+      ]
+    },
+    {
+      id: "seats",
+      eyebrow: "Team size & seat requirement",
+      text: "How many seats are you looking for?",
+      options: [
+        {label:"1-3 seats", value:"1-3"},
+        {label:"4-10 seats", value:"4-10"},
+        {label:"11-25 seats", value:"11-25"},
+        {label:"More than 25", value:"25+"}
+      ]
+    }
+  ];
+
+  var labelMap = {
+    dpiit: {
+      yes:"Yes",
+      planning:"No, but planning to register",
+      no:"No"
+    },
+    coreops: {
+      a:"Proprietary technology product/platform",
+      b:"Innovative solutions using own IP/algorithms",
+      c:"Consulting/implementation using third-party tech",
+      d:"Staffing/recruitment/workforce solutions",
+      e:"Other"
+    },
+    ip: {
+      registered:"Registered IP",
+      inprogress:"Applications in progress",
+      planned:"Not yet, but planned",
+      no:"No IP"
+    },
+    stage: {
+      ideation:"Ideation / Prototype / Pre-revenue MVP",
+      revenue:"Revenue-generating",
+      funded:"Funded - Pre-Seed/Seed/Series A+"
+    },
+    seats: {
+      "1-3":"1-3 seats",
+      "4-10":"4-10 seats",
+      "11-25":"11-25 seats",
+      "25+":"More than 25 seats"
+    }
+  };
+
+  var step = 0;
+  var answers = {};
+  var amberReasons = [];
+
+  var cardEl = document.getElementById("card");
+  var trailEl = document.getElementById("trail");
+  var modalOverlay = document.getElementById("modalOverlay");
+  var modalClose = document.getElementById("modalClose");
+
+  if (!cardEl || !trailEl) {
+    return;
+  }
+
+  function twoDigit(num) {
+    num = parseInt(num, 10);
+    if (num < 10) {
+      return "0" + num;
+    }
+    return "" + num;
+  }
+
+  function esc(text) {
+    if (text === null || text === undefined) {
+      return "";
+    }
+
+    text = "" + text;
+
+    return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function renderTrail(activeIdx) {
+    var html = "";
+    var i;
+
+    for (i = 0; i < TOTAL_STEPS; i++) {
+      if (i < activeIdx) {
+        html += '<div class="seg done"></div>';
+      } else if (i === activeIdx) {
+        html += '<div class="seg active"></div>';
+      } else {
+        html += '<div class="seg"></div>';
+      }
+    }
+
+    html += '<div class="qcount">Q' + twoDigit(activeIdx + 1) + ' / ' + twoDigit(TOTAL_STEPS) + '</div>';
+
+    trailEl.innerHTML = html;
+  }
+
+  function renderQuestion(idx) {
+    var q = questions[idx];
+    var html = "";
+    var i;
+    var letter;
+    var opt;
+
+    renderTrail(idx);
+
+    if (idx > 0) {
+      html += '<button type="button" class="back-btn" id="backBtn">&lsaquo; Back</button>';
+    }
+
+    html += '<div class="eyebrow">' + esc(q.eyebrow) + '</div>';
+    html += '<h2 class="qtext">' + esc(q.text) + '</h2>';
+    html += '<div class="options">';
+
+    for (i = 0; i < q.options.length; i++) {
+      opt = q.options[i];
+      letter = String.fromCharCode(97 + i);
+
+      html += '<button type="button" class="opt" data-value="' + esc(opt.value) + '">';
+      html += '<span class="opt-letter">' + letter + '</span>';
+      html += esc(opt.label);
+      html += '</button>';
+    }
+
+    html += '</div>';
+    html += '<div class="note" id="inlineNote"></div>';
+
+    cardEl.innerHTML = html;
+
+    attachOptionEvents(q);
+
+    if (idx > 0) {
+      document.getElementById("backBtn").onclick = function() {
+        goBack();
+      };
+    }
+  }
+
+  function attachOptionEvents(q) {
+    var btns = cardEl.getElementsByClassName("opt");
+    var i;
+
+    for (i = 0; i < btns.length; i++) {
+      btns[i].onclick = function() {
+        var allBtns = cardEl.getElementsByClassName("opt");
+        var j;
+
+        for (j = 0; j < allBtns.length; j++) {
+          allBtns[j].className = allBtns[j].className.replace(" selected", "");
+        }
+
+        this.className += " selected";
+
+        var val = this.getAttribute("data-value");
+        answers[q.id] = val;
+
+        var noteText = null;
+
+        if (q.noteOnSelect && q.noteOnSelect[val]) {
+          noteText = q.noteOnSelect[val];
+        }
+
+        if (noteText) {
+          var note = document.getElementById("inlineNote");
+
+          note.innerHTML = '<div>' + esc(noteText) + '</div><button type="button" class="note-continue" id="noteContinueBtn">Continue &rarr;</button>';
+          note.className = "note show";
+
+          document.getElementById("noteContinueBtn").onclick = function() {
+            handleAnswer(q, val);
+          };
+        } else {
+          setTimeout(function() {
+            handleAnswer(q, val);
+          }, 300);
+        }
+      };
+    }
+  }
+
+  function goBack() {
+    if (step > 0) {
+      step = step - 1;
+      renderQuestion(step);
+    }
+  }
+
+  function handleAnswer(q, val) {
+    if (q.id === "coreops" && (val === "c" || val === "d" || val === "e")) {
+      showResult("red");
+      return;
+    }
+
+    if (step < TOTAL_STEPS - 1) {
+      step = step + 1;
+      renderQuestion(step);
+    } else {
+      showResult(computeOutcome());
+    }
+  }
+
+  function computeOutcome() {
+    var ipStrong;
+    var stageStrong;
+
+    amberReasons = [];
+
+    if (answers.dpiit === "no") {
+      amberReasons.push("DPIIT registration: No");
+    }
+
+    ipStrong = answers.ip === "registered" || answers.ip === "inprogress";
+    stageStrong = answers.stage === "revenue" || answers.stage === "funded";
+
+    if (!ipStrong) {
+      amberReasons.push("IP status: " + (labelMap.ip[answers.ip] || answers.ip));
+    }
+
+    if (!stageStrong) {
+      amberReasons.push("Business stage: " + (labelMap.stage[answers.stage] || answers.stage));
+    }
+
+    if (amberReasons.length === 0) {
+      return "green";
+    }
+
+    return "amber";
+  }
+
+  function showResult(type) {
+    var html = "";
+
+    trailEl.innerHTML = "";
+
+    if (type === "green") {
+      html += '<div class="result">';
+      html += '<div class="beacon green">&#10003;</div>';
+      html += '<h2>You look like a great fit.</h2>';
+      html += '<p>Based on your answers, your startup aligns well with T-Hub co-working policy. Go ahead and apply, and our team will be in touch.</p>';
+      html += '<button type="button" class="result-cta green" id="applyBtn">Apply for Co-Working Space &rarr;</button>';
+      html += '</div>';
+
+      cardEl.innerHTML = html;
+
+      document.getElementById("applyBtn").onclick = function() {
+        openApplicationModal();
+      };
+    }
+
+    if (type === "amber") {
+      html += '<div class="result">';
+      html += '<div class="beacon amber">&#33;</div>';
+      html += '<span class="status-pill amber">Review Required</span>';
+      html += '<h2>You may be eligible &mdash; let us talk.</h2>';
+      html += '<p>A few areas of your profile need a closer look before we can confirm fit. Reach out to our team and we will walk you through next steps.</p>';
+      html += '<a class="result-cta amber" href="' + buildAmberMailHref() + '" target="_top" rel="noopener">Contact T-Edge Team &rarr;</a>';
+      html += '</div>';
+
+      cardEl.innerHTML = html;
+    }
+
+    if (type === "red") {
+      html += '<div class="result">';
+      html += '<div class="beacon red">&#10005;</div>';
+      html += '<span class="status-pill red">Not Aligned</span>';
+      html += '<h2>Not quite aligned right now.</h2>';
+      html += '<p>T-Hub co-working space is designed for technology and innovation-driven startups building proprietary products or platforms. T-Hub offers other ways to engage with the ecosystem, including mentoring, events, and networking.</p>';
+      html += '<div class="countdown">Redirecting in <b id="cdNum">5</b>s&hellip;</div>';
+      html += '<a class="result-cta red" href="' + RED_REDIRECT + '" target="_top" rel="noopener">Explore T-Hub Programmes &rarr;</a>';
+      html += '</div>';
+
+      cardEl.innerHTML = html;
+
+      startRedirectCountdown();
+    }
+  }
+
+  function startRedirectCountdown() {
+    var n = 5;
+    var cdEl = document.getElementById("cdNum");
+
+    var timer = setInterval(function() {
+      n = n - 1;
+
+      if (cdEl) {
+        cdEl.innerHTML = n;
+      }
+
+      if (n <= 0) {
+        clearInterval(timer);
+        redirectTop(RED_REDIRECT);
+      }
+    }, 1000);
+  }
+
+  function redirectTop(url) {
+    try {
+      if (window.top && window.top !== window) {
+        window.top.location.href = url;
+      } else {
+        window.location.href = url;
+      }
+    } catch(e) {
+      window.location.href = url;
+    }
+  }
+
+  function openApplicationModal() {
+    if (modalOverlay) {
+      modalOverlay.className = "modal-overlay show";
+    }
+  }
+
+  if (modalClose) {
+    modalClose.onclick = function() {
+      if (modalOverlay) {
+        modalOverlay.className = "modal-overlay";
+      }
+    };
+  }
+
+  if (modalOverlay) {
+    modalOverlay.onclick = function(e) {
+      e = e || window.event;
+      var target = e.target || e.srcElement;
+
+      if (target && target.id === "modalOverlay") {
+        modalOverlay.className = "modal-overlay";
+      }
+    };
+  }
+
+  function buildAmberMailHref() {
+    var subject = "T-Hub Co-Working Eligibility Assessment - Review Requested";
+    var body = "";
+    var i;
+
+    body += "Hi T-Edge Team,\n\n";
+    body += "A prospective startup completed the co-working eligibility self-assessment and would like a review.\n\n";
+    body += "Areas flagged for review:\n";
+
+    for (i = 0; i < amberReasons.length; i++) {
+      body += "- " + amberReasons[i] + "\n";
+    }
+
+    body += "\nFull responses:\n";
+    body += "- DPIIT registration: " + (labelMap.dpiit[answers.dpiit] || answers.dpiit) + "\n";
+    body += "- Core operations: " + (labelMap.coreops[answers.coreops] || answers.coreops) + "\n";
+    body += "- IP status: " + (labelMap.ip[answers.ip] || answers.ip) + "\n";
+    body += "- Business stage: " + (labelMap.stage[answers.stage] || answers.stage) + "\n";
+    body += "- Seats requested: " + (labelMap.seats[answers.seats] || answers.seats) + "\n";
+    body += "\nPlease reply to the sender once they reach out, or ask them to share their startup name and contact details.\n";
+
+    return "mailto:" + TEDGE_EMAIL + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+  }
+
+  renderQuestion(0);
+
+})();
+</script>
+
+</body>
+</html>
